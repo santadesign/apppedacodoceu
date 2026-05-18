@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#8b1e22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Pedaço do Céu">
+<link rel="manifest" href="manifest.json">
+<title>Pedaço do Céu – Comandas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #8b1e22;
+    --red-dark: #6a1518;
+    --red-light: #c42b31;
+    --gold: #d4a843;
+    --gold-light: #f0c96a;
+    --cream: #fdf6ec;
+    --dark: #1a0e0f;
+    --mid: #3d2020;
+    --muted: #7a5a5a;
+    --white: #ffffff;
+    --border: rgba(139,30,34,0.15);
+    --shadow: 0 4px 24px rgba(139,30,34,0.12);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--dark);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ── TOP HEADER ── */
+  .header {
+    background: var(--red);
+    color: var(--white);
+    padding: 14px 16px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.25);
+  }
+  .header-title { font-family: 'Playfair Display', serif; font-size: 20px; letter-spacing: 0.3px; }
+  .header-sub { font-size: 11px; opacity: 0.75; margin-top: 1px; }
+  .header-badge {
+    background: var(--gold);
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 13px;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.2s;
+  }
+  .header-badge.bump { animation: bump 0.3s ease; }
+  @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 100;
+    box-shadow: 0 -2px 16px rgba(0,0,0,0.08);
+  }
+  .nav-btn {
+    flex: 1; border: none; background: none;
+    padding: 10px 4px 12px;
+    cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-btn.active { color: var(--red); }
+  .nav-btn svg { width: 22px; height: 22px; }
+
+  /* ── SCREENS ── */
+  .screen { display: none; padding: 16px 16px 90px; }
+  .screen.active { display: block; }
+
+  /* ── SECTION HEADERS ── */
+  .section-label {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px; color: var(--red);
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--gold);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-label:first-child { margin-top: 4px; }
+
+  /* ── MENU ITEMS ── */
+  .menu-item {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .menu-item-header {
+    padding: 12px 14px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .menu-item-info { flex: 1; }
+  .menu-item-name { font-weight: 600; font-size: 14px; line-height: 1.3; }
+  .menu-item-desc { font-size: 12px; color: var(--muted); margin-top: 2px; line-height: 1.4; }
+  .menu-item-expand { color: var(--red); transition: transform 0.2s; flex-shrink: 0; }
+  .menu-item.open .menu-item-expand { transform: rotate(180deg); }
+
+  .menu-item-sizes {
+    display: none;
+    padding: 0 14px 14px;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .menu-item.open .menu-item-sizes { display: flex; }
+
+  .size-btn {
+    border: 2px solid var(--border);
+    background: var(--cream);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  .size-btn:active { transform: scale(0.95); }
+  .size-btn .size-label { font-weight: 700; font-size: 14px; color: var(--red); }
+  .size-btn .size-price { font-size: 12px; color: var(--muted); }
+
+  /* Simple items (no sizes) */
+  .simple-add-btn {
+    background: var(--red);
+    color: var(--white);
+    border: none; border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: 13px;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .simple-add-btn:active { background: var(--red-dark); }
+
+  /* ── CART PANEL (screen) ── */
+  .cart-empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .cart-empty svg { width: 56px; height: 56px; opacity: 0.3; margin-bottom: 12px; }
+  .cart-empty p { font-size: 15px; }
+
+  .cart-items { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+  .cart-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 600; font-size: 14px; }
+  .cart-item-price { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .cart-item-qty {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .qty-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 1.5px solid var(--red);
+    background: none;
+    color: var(--red);
+    font-size: 18px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .qty-btn:active { background: var(--red); color: var(--white); }
+  .qty-num { font-weight: 700; min-width: 18px; text-align: center; font-size: 15px; }
+
+  /* ── FORM FIELDS ── */
+  .form-section { margin-top: 16px; }
+  .form-label {
+    font-size: 12px; font-weight: 600;
+    color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px;
+    margin-bottom: 8px; display: block;
+  }
+
+  .payment-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .pay-btn {
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px 10px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    color: var(--dark);
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.15s;
+  }
+  .pay-btn.selected {
+    border-color: var(--red);
+    background: #fff1f1;
+    color: var(--red);
+  }
+  .pay-btn .pay-icon { font-size: 18px; }
+
+  .text-input {
+    width: 100%;
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.15s;
+    resize: vertical;
+  }
+  .text-input:focus { border-color: var(--red); }
+
+  .obs-input {
+    min-height: 70px;
+  }
+
+  /* ── TOTALS ── */
+  .cart-total-box {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin: 16px 0;
+  }
+  .total-row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; color: var(--muted); margin-bottom: 6px;
+  }
+  .total-row.big {
+    font-size: 18px; font-weight: 700; color: var(--dark);
+    margin-top: 8px; padding-top: 8px;
+    border-top: 1px solid var(--border);
+    margin-bottom: 0;
+  }
+
+  /* ── BUTTONS ── */
+  .btn-primary {
+    width: 100%;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 10px;
+  }
+  .btn-primary:active { background: var(--red-dark); transform: scale(0.98); }
+  .btn-secondary {
+    width: 100%;
+    background: var(--cream);
+    color: var(--red);
+    border: 2px solid var(--red);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.15s;
+    margin-bottom: 10px;
+  }
+  .btn-secondary:active { background: #fff1f1; }
+  .btn-danger {
+    width: 100%;
+    background: none;
+    color: #c0392b;
+    border: 1.5px solid #c0392b;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  /* ── HISTORY ── */
+  .history-empty {
+    text-align: center; padding: 60px 20px;
+    color: var(--muted);
+  }
+  .hist-item {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+  }
+  .hist-header {
+    padding: 12px 14px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer;
+    gap: 10px;
+  }
+  .hist-num { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 700; color: var(--red); }
+  .hist-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .hist-total { font-weight: 700; font-size: 16px; color: var(--dark); flex-shrink: 0; }
+  .hist-body { display: none; padding: 0 14px 14px; border-top: 1px solid var(--border); }
+  .hist-item.open .hist-body { display: block; }
+  .hist-body-row { font-size: 13px; padding: 4px 0; border-bottom: 1px dotted var(--border); display: flex; justify-content: space-between; }
+  .hist-pay-tag {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: #fff1f1; color: var(--red);
+    border-radius: 6px; padding: 4px 8px;
+    font-size: 12px; font-weight: 600;
+    margin: 8px 0 0;
+  }
+  .hist-addr { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .hist-actions { display: flex; gap: 8px; margin-top: 10px; }
+  .hist-btn {
+    flex: 1; padding: 9px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; border: none;
+    transition: all 0.15s;
+  }
+  .hist-btn-print { background: var(--red); color: var(--white); }
+  .hist-btn-del { background: #fce8e8; color: #c0392b; }
+
+/* ── RECEIPT PRINT AREA ── */
+  @media print {
+    body * { visibility: hidden !important; }
+    #print-receipt, #print-receipt * { visibility: visible !important; }
+    #print-receipt {
+      display: block !important; /* <--- ESSA É A CORREÇÃO PRINCIPAL */
+      position: absolute; /* <--- Troque fixed por absolute para não cortar comandas longas */
+      top: 0; 
+      left: 0;
+      width: 80mm;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #000;
+    }
+  }
+  #print-receipt { display: none; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--dark); color: var(--white);
+    padding: 10px 20px; border-radius: 30px;
+    font-size: 13px; font-weight: 500;
+    opacity: 0; transition: all 0.3s;
+    pointer-events: none; white-space: nowrap; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── CONFIRM MODAL ── */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200; align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal-box {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    padding: 24px 20px 32px;
+    width: 100%; max-width: 480px;
+  }
+  .modal-title { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 8px; color: var(--red); }
+  .modal-body { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
+  .modal-actions { display: flex; gap: 10px; }
+
+  /* order counter badge next to nav */
+  .nav-badge {
+    position: absolute; top: 4px; right: 50%;
+    transform: translateX(12px);
+    background: var(--gold);
+    color: var(--dark); font-size: 10px; font-weight: 700;
+    min-width: 16px; height: 16px;
+    border-radius: 8px; padding: 0 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .nav-btn { position: relative; }
+
+  .obs-row { margin-top: 12px; }
+
+  .delivery-toggle {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--white); border: 2px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+    cursor: pointer; transition: border-color 0.15s;
+    margin-bottom: 8px;
+  }
+  .delivery-toggle.active { border-color: var(--red); }
+  .toggle-circle {
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0;
+  }
+  .delivery-toggle.active .toggle-circle { border-color: var(--red); background: var(--red); }
+  .toggle-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--white); }
+  .delivery-toggle span { font-size: 14px; font-weight: 500; }
+
+  .addr-fields { display: none; flex-direction: column; gap: 8px; }
+  .addr-fields.show { display: flex; }
+
+  .num-obs-row { display: flex; gap: 8px; }
+  .num-obs-row .text-input:first-child { width: 100px; flex-shrink: 0; }
+  .num-obs-row .text-input:last-child { flex: 1; }
+
+  /* search bar */
+  .search-wrap { position: relative; margin-bottom: 12px; }
+  .search-input {
+    width: 100%; border: 2px solid var(--border);
+    background: var(--white); border-radius: 10px;
+    padding: 10px 14px 10px 38px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--dark);
+    outline: none;
+  }
+  .search-input:focus { border-color: var(--red); }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+
+  .hist-clear-btn {
+    background: none; border: 1.5px solid #c0392b; color: #c0392b;
+    border-radius: 8px; padding: 8px 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; margin-bottom: 12px; width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">🍱 Pedaço do Céu</div>
+    <div class="header-sub">Sistema de Comandas</div>
+  </div>
+  <div class="header-badge" id="headerBadge">0</div>
+</div>
+
+<!-- SCREENS -->
+<div class="screen active" id="screen-menu">
+
+  <div class="search-wrap">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+    <input class="search-input" id="searchInput" type="search" placeholder="Buscar item...">
+  </div>
+
+  <div id="menuList"></div>
+</div>
+
+<div class="screen" id="screen-cart">
+  <div id="cartContent"></div>
+</div>
+
+<div class="screen" id="screen-history">
+  <div id="historyContent"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-menu" onclick="showScreen('menu')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    Cardápio
+  </button>
+  <button class="nav-btn" id="nav-cart" onclick="showScreen('cart')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    <span id="nav-cart-badge" class="nav-badge" style="display:none">0</span>
+    Comanda
+  </button>
+  <button class="nav-btn" id="nav-history" onclick="showScreen('history')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+    Histórico
+  </button>
+</nav>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modalTitle">Confirmar</div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" style="margin:0" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" style="margin:0" id="modalConfirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- PRINT AREA -->
+<div id="print-receipt"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const MENU = [
+  {
+    section: '🍱 Marmitex',
+    items: [
+      { id: 'm1', name: 'Marmitex de Bisteca', desc: 'Bisteca suína grelhada na chapa', sizes: [{l:'P',p:20},{l:'M',p:23},{l:'G',p:33}] },
+      { id: 'm2', name: 'Marmitex de Toscana', desc: 'Linguiça toscana feita na chapa', sizes: [{l:'P',p:17},{l:'M',p:21},{l:'G',p:31}] },
+      { id: 'm3', name: 'Marmitex de Omelete', desc: 'Omelete tradicional com ovos selecionados', sizes: [{l:'P',p:17},{l:'M',p:20},{l:'G',p:30}] },
+      { id: 'm4', name: 'Marmitex de Calabresa', desc: 'Linguiça calabresa com cebola fresca', sizes: [{l:'P',p:17},{l:'M',p:21},{l:'G',p:31}] },
+      { id: 'm5', name: 'Marmitex de Isca de Frango', desc: 'Tiras de peito de frango grelhadas', sizes: [{l:'P',p:19},{l:'M',p:22},{l:'G',p:32}] },
+      { id: 'm6', name: 'Marmitex de Fígado Acebolado', desc: 'Fígado bovino com cebola', sizes: [{l:'P',p:19},{l:'M',p:22},{l:'G',p:32}] },
+      { id: 'm7', name: 'Marmitex de Frango Grelhado', desc: 'Filé de frango leve e saudável', sizes: [{l:'P',p:19},{l:'M',p:23},{l:'G',p:33}] },
+      { id: 'm8', name: 'Marmitex de Contra Filé', desc: 'Contra filé premium selado na chapa', sizes: [{l:'P',p:21},{l:'M',p:25},{l:'G',p:35}] },
+      { id: 'm9', name: 'Marmitex de Frango à Milanesa', desc: 'Frango empanado até dourar', sizes: [{l:'P',p:20},{l:'M',p:24},{l:'G',p:34}] },
+      { id: 'm10', name: 'Marmitex de Carne à Milanesa', desc: 'Bife empanado crocante por fora', sizes: [{l:'P',p:23},{l:'M',p:26},{l:'G',p:36}] },
+      { id: 'm11', name: 'Marmitex de Frango à Parmegiana', desc: 'Frango milanesa com molho e queijo', sizes: [{l:'P',p:23},{l:'M',p:25},{l:'G',p:35}] },
+      { id: 'm12', name: 'Marmitex de Carne à Parmegiana', desc: 'Bife milanesa com queijo e molho de tomate', sizes: [{l:'P',p:24},{l:'M',p:27},{l:'G',p:37}] },
+      { id: 'm13', name: 'Marmitex Mista (Carne e Frango)', desc: 'Combinação de carne bovina e frango', sizes: [{l:'P',p:24},{l:'M',p:26},{l:'G',p:36}] },
+    ]
+  },
+  {
+    section: '🍲 Feijoada Especial',
+    items: [
+      { id: 'f1', name: 'Feijoada Completa da Casa', desc: 'Quartas e Sábados — com arroz, couve e farofa', sizes: [{l:'Pequena',p:28},{l:'Média',p:40},{l:'Grande',p:50}] },
+    ]
+  },
+  {
+    section: '🥤 Bebidas Geladas',
+    items: [
+      { id: 'b1', name: 'Refrigerante Lata 350ml', desc: 'Consulte sabores', price: 7 },
+      { id: 'b2', name: 'Suco Lata', desc: 'Sabores variados', price: 7 },
+      { id: 'b3', name: 'H2O 500ml', desc: 'Garrafa 500ml', price: 8 },
+      { id: 'b4', name: 'Sprite Fresh', desc: 'Garrafa limão leve', price: 8 },
+      { id: 'b5', name: 'Água Mineral 500ml', desc: 'Sem gás', price: 3 },
+      { id: 'b6', name: 'Água com Gás 500ml', desc: 'Garrafa fresca', price: 5 },
+      { id: 'b7', name: 'Refrigerante 600ml', desc: 'Garrafa 600ml', price: 8 },
+      { id: 'b8', name: 'Coca-Cola 600ml', desc: 'Garrafa gelada', price: 9 },
+      { id: 'b9', name: 'Coca-Cola 1 Litro', desc: 'Garrafa retornável/descartável', price: 12 },
+      { id: 'b10', name: 'Coca-Cola 2 Litros', desc: 'Tamanho família', price: 17 },
+      { id: 'b11', name: 'Sukita 2 Litros', desc: 'Sabor Laranja', price: 13 },
+    ]
+  }
+];
+
+const PAYMENT_OPTS = [
+  { id: 'dinheiro', label: 'Dinheiro', icon: '💵' },
+  { id: 'pix', label: 'Pix', icon: '⚡' },
+  { id: 'debito', label: 'Débito', icon: '💳' },
+  { id: 'credito', label: 'Crédito', icon: '💳' },
+  { id: 'outros', label: 'Outros', icon: '🔄' },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let cart = [];
+let payment = '';
+let delivery = false;
+let addrStreet = '', addrNum = '', addrObs = '', orderObs = '';
+let troco = '';
+
+// ── HISTORY ───────────────────────────────────────────────────────────
+function loadHistory() {
+  try { return JSON.parse(localStorage.getItem('pdc_history') || '[]'); } catch { return []; }
+}
+function saveHistory(h) { localStorage.setItem('pdc_history', JSON.stringify(h)); }
+
+// ── RENDER MENU ────────────────────────────────────────────────────────
+function renderMenu(filter='') {
+  const list = document.getElementById('menuList');
+  let html = '';
+  const q = filter.toLowerCase().trim();
+
+  MENU.forEach(sec => {
+    const filtered = sec.items.filter(i =>
+      !q || i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q)
+    );
+    if (!filtered.length) return;
+
+    html += `<div class="section-label">${sec.section}</div>`;
+    filtered.forEach(item => {
+      if (item.sizes) {
+        html += `
+          <div class="menu-item" id="mi-${item.id}">
+            <div class="menu-item-header" onclick="toggleItem('${item.id}')">
+              <div class="menu-item-info">
+                <div class="menu-item-name">${item.name}</div>
+                <div class="menu-item-desc">${item.desc}</div>
+              </div>
+              <div class="menu-item-expand">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+            </div>
+            <div class="menu-item-sizes">
+              ${item.sizes.map(s => `
+                <button class="size-btn" onclick="addToCart('${item.id}','${s.l}',${s.p})">
+                  <span class="size-label">${s.l}</span>
+                  <span class="size-price">R$ ${s.p.toFixed(2).replace('.',',')}</span>
+                </button>
+              `).join('')}
+            </div>
+          </div>`;
+      } else {
+        html += `
+          <div class="menu-item">
+            <div class="menu-item-header">
+              <div class="menu-item-info">
+                <div class="menu-item-name">${item.name}</div>
+                <div class="menu-item-desc">${item.desc} — <b>R$ ${item.price.toFixed(2).replace('.',',')}</b></div>
+              </div>
+              <button class="simple-add-btn" onclick="addToCart('${item.id}','',${item.price})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+                Add
+              </button>
+            </div>
+          </div>`;
+      }
+    });
+  });
+
+  if (!html) html = '<div style="text-align:center;padding:40px;color:var(--muted)">Nenhum item encontrado</div>';
+  list.innerHTML = html;
+}
+
+function toggleItem(id) {
+  const el = document.getElementById('mi-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+// ── CART LOGIC ────────────────────────────────────────────────────────
+function addToCart(id, size, price) {
+  const item = MENU.flatMap(s => s.items).find(i => i.id === id);
+  const key = id + '_' + size;
+  const existing = cart.find(c => c.key === key);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ key, id, name: item.name + (size ? ` (${size})` : ''), price, qty: 1 });
+  }
+  updateBadge();
+  showToast('✅ ' + item.name + (size ? ` ${size}` : '') + ' adicionado!');
+}
+
+function updateBadge() {
+  const total = cart.reduce((s, c) => s + c.qty, 0);
+  document.getElementById('headerBadge').textContent = total;
+  const badge = document.getElementById('nav-cart-badge');
+  if (total > 0) { badge.style.display = 'flex'; badge.textContent = total; }
+  else badge.style.display = 'none';
+  document.getElementById('headerBadge').classList.add('bump');
+  setTimeout(() => document.getElementById('headerBadge').classList.remove('bump'), 300);
+}
+
+function changeQty(key, delta) {
+  const idx = cart.findIndex(c => c.key === key);
+  if (idx === -1) return;
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  updateBadge();
+  renderCart();
+}
+
+function cartTotal() {
+  return cart.reduce((s, c) => s + c.price * c.qty, 0);
+}
+
+// ── RENDER CART ────────────────────────────────────────────────────────
+function renderCart() {
+  const el = document.getElementById('cartContent');
+  if (cart.length === 0) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <p>Nenhum item na comanda</p>
+        <p style="font-size:13px;margin-top:6px">Adicione itens pelo Cardápio</p>
+      </div>`;
+    return;
+  }
+
+  const itemsHtml = cart.map(c => `
+    <div class="cart-item">
+      <div class="cart-item-info">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-price">R$ ${(c.price * c.qty).toFixed(2).replace('.',',')} (R$ ${c.price.toFixed(2).replace('.',',')} un.)</div>
+      </div>
+      <div class="cart-item-qty">
+        <button class="qty-btn" onclick="changeQty('${c.key}',-1)">−</button>
+        <span class="qty-num">${c.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${c.key}',1)">+</button>
+      </div>
+    </div>
+  `).join('');
+
+  const payHtml = PAYMENT_OPTS.map(p => `
+    <button class="pay-btn ${payment===p.id?'selected':''}" onclick="selectPayment('${p.id}')">
+      <span class="pay-icon">${p.icon}</span> ${p.label}
+    </button>
+  `).join('');
+
+  const trocoField = payment === 'dinheiro' ? `
+    <div class="form-section">
+      <label class="form-label">Troco para</label>
+      <input class="text-input" type="number" inputmode="decimal" placeholder="Ex: 50,00" id="trocoInput" value="${troco}" oninput="troco=this.value">
+    </div>` : '';
+
+  const addrFields = `
+    <div class="addr-fields ${delivery?'show':''}" id="addrFields">
+      <input class="text-input" type="text" placeholder="Rua / Avenida" id="addrStreet" value="${addrStreet}" oninput="addrStreet=this.value">
+      <div class="num-obs-row">
+        <input class="text-input" type="text" placeholder="Nº" id="addrNum" value="${addrNum}" oninput="addrNum=this.value">
+        <input class="text-input" type="text" placeholder="Complemento (apto, ref...)" id="addrObs" value="${addrObs}" oninput="addrObs=this.value">
+      </div>
+    </div>`;
+
+  const total = cartTotal();
+
+  el.innerHTML = `
+    <div class="cart-items">${itemsHtml}</div>
+
+    <div class="cart-total-box">
+      <div class="total-row"><span>Itens (${cart.reduce((s,c)=>s+c.qty,0)})</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
+      <div class="total-row big"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Forma de Pagamento</label>
+      <div class="payment-grid">${payHtml}</div>
+    </div>
+    ${trocoField}
+
+    <div class="form-section">
+      <label class="form-label">Entrega</label>
+      <div class="delivery-toggle ${delivery?'active':''}" onclick="toggleDelivery()">
+        <div class="toggle-circle"><div class="toggle-dot"></div></div>
+        <span>${delivery ? 'Com entrega' : 'Retirar no local'}</span>
+      </div>
+      ${addrFields}
+    </div>
+
+    <div class="form-section obs-row">
+      <label class="form-label">Observações do pedido</label>
+      <textarea class="text-input obs-input" placeholder="Ex: sem cebola, ponto da carne..." id="orderObsInput" oninput="orderObs=this.value">${orderObs}</textarea>
+    </div>
+
+    <div style="margin-top:20px">
+      <button class="btn-primary" onclick="confirmOrder()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+        Finalizar & Imprimir
+      </button>
+      <button class="btn-danger" onclick="confirmClear()">🗑 Limpar comanda</button>
+    </div>
+  `;
+}
+
+function selectPayment(id) {
+  payment = id;
+  renderCart();
+}
+
+function toggleDelivery() {
+  delivery = !delivery;
+  renderCart();
+}
+
+// ── CONFIRM ORDER ──────────────────────────────────────────────────────
+function confirmOrder() {
+  if (cart.length === 0) { showToast('Adicione itens primeiro!'); return; }
+  if (!payment) { showToast('Selecione a forma de pagamento!'); return; }
+  if (delivery && !addrStreet.trim()) { showToast('Informe o endereço de entrega!'); return; }
+
+  const history = loadHistory();
+  const num = history.length + 1;
+  const now = new Date();
+  const order = {
+    num,
+    date: now.toLocaleDateString('pt-BR'),
+    time: now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
+    items: [...cart],
+    total: cartTotal(),
+    payment,
+    delivery,
+    address: delivery ? `${addrStreet}${addrNum ? ', '+addrNum : ''}${addrObs ? ' – '+addrObs : ''}` : '',
+    obs: orderObs,
+    troco: payment === 'dinheiro' ? troco : '',
+  };
+  history.unshift(order);
+  saveHistory(history);
+
+  printOrder(order);
+
+  cart = [];
+  payment = '';
+  delivery = false;
+  addrStreet = addrNum = addrObs = orderObs = troco = '';
+  updateBadge();
+  showToast('✅ Pedido #' + num + ' registrado!');
+  showScreen('history');
+}
+
+function confirmClear() {
+  openModal('Limpar comanda?', 'Todos os itens adicionados serão removidos.', () => {
+    cart = [];
+    payment = '';
+    updateBadge();
+    renderCart();
+    showToast('Comanda limpa!');
+  });
+}
+
+// ── PRINT ─────────────────────────────────────────────────────────────
+function printOrder(order) {
+  const payLabel = PAYMENT_OPTS.find(p => p.id === order.payment)?.label || order.payment;
+  const line = '────────────────────────';
+  const rows = order.items.map(i =>
+    `${i.qty}x ${i.name}\n   R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}`
+  ).join('\n');
+
+  const receipt = `
+    <div style="font-family:'Courier New',monospace;font-size:12px;width:72mm;padding:8px">
+      <div style="text-align:center;font-weight:bold;font-size:14px">PEDAÇO DO CÉU</div>
+      <div style="text-align:center;font-size:11px">Rua Carlos de Campos, 255<br>Mauá – SP  |  (11) 4514-9181</div>
+      <div style="text-align:center;margin:4px 0">${line}</div>
+      <div>PEDIDO #${order.num}</div>
+      <div>${order.date} às ${order.time}</div>
+      <div>${line}</div>
+      <pre style="margin:0;font-family:inherit">${rows}</pre>
+      <div>${line}</div>
+      <div style="font-weight:bold;font-size:13px">TOTAL: R$ ${order.total.toFixed(2).replace('.',',')}</div>
+      <div>PAGAMENTO: ${payLabel}${order.troco ? '\nTROCO PARA: R$ '+Number(order.troco).toFixed(2).replace('.',',') : ''}</div>
+      ${order.delivery ? `<div>${line}\nENTREGA: ${order.address}</div>` : '<div>RETIRADA NO LOCAL</div>'}
+      ${order.obs ? `<div>${line}\nOBS: ${order.obs}</div>` : ''}
+      <div style="text-align:center;margin-top:8px">Obrigado! 🙏</div>
+    </div>
+  `;
+  document.getElementById('print-receipt').innerHTML = receipt;
+  setTimeout(() => window.print(), 100);
+}
+
+// ── HISTORY RENDER ────────────────────────────────────────────────────
+function renderHistory() {
+  const el = document.getElementById('historyContent');
+  const history = loadHistory();
+
+  if (history.length === 0) {
+    el.innerHTML = `
+      <div class="history-empty">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="opacity:.3;display:block;margin:0 auto 12px"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+        <p>Nenhum pedido ainda</p>
+      </div>`;
+    return;
+  }
+
+  const payLabel = id => PAYMENT_OPTS.find(p => p.id === id)?.label || id;
+  const payIcon  = id => PAYMENT_OPTS.find(p => p.id === id)?.icon || '💳';
+
+  let html = `<button class="hist-clear-btn" onclick="confirmClearHistory()">🗑 Limpar todo o histórico</button>`;
+  history.forEach((o, idx) => {
+    const rows = o.items.map(i =>
+      `<div class="hist-body-row"><span>${i.qty}x ${i.name}</span><span>R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}</span></div>`
+    ).join('');
+    html += `
+      <div class="hist-item" id="hist-${idx}">
+        <div class="hist-header" onclick="toggleHist(${idx})">
+          <div>
+            <div class="hist-num">Pedido #${o.num}</div>
+            <div class="hist-meta">${o.date} às ${o.time}</div>
+          </div>
+          <div class="hist-total">R$ ${o.total.toFixed(2).replace('.',',')}</div>
+        </div>
+        <div class="hist-body">
+          ${rows}
+          <div style="margin-top:8px">
+            <div class="hist-pay-tag">${payIcon(o.payment)} ${payLabel(o.payment)}${o.troco ? ' · troco p/ R$'+Number(o.troco).toFixed(2).replace('.',',') : ''}</div>
+            ${o.delivery && o.address ? `<div class="hist-addr">📍 ${o.address}</div>` : '<div class="hist-addr">🏠 Retirada no local</div>'}
+            ${o.obs ? `<div class="hist-addr">📝 ${o.obs}</div>` : ''}
+          </div>
+          <div class="hist-actions">
+            <button class="hist-btn hist-btn-print" onclick="printOrder(${JSON.stringify(o).replace(/"/g,'&quot;')})">🖨 Reimprimir</button>
+            <button class="hist-btn hist-btn-del" onclick="deleteOrder(${idx})">Excluir</button>
+          </div>
+        </div>
+      </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function toggleHist(idx) {
+  document.getElementById('hist-' + idx)?.classList.toggle('open');
+}
+
+function deleteOrder(idx) {
+  openModal('Excluir pedido?', 'Este pedido será removido do histórico.', () => {
+    const h = loadHistory();
+    h.splice(idx, 1);
+    saveHistory(h);
+    renderHistory();
+  });
+}
+
+function confirmClearHistory() {
+  openModal('Limpar histórico?', 'Todos os pedidos do histórico serão apagados. Esta ação não pode ser desfeita.', () => {
+    saveHistory([]);
+    renderHistory();
+    showToast('Histórico limpo!');
+  });
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────────
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'cart') renderCart();
+  if (name === 'history') renderHistory();
+}
+
+// ── TOAST ──────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── MODAL ──────────────────────────────────────────────────────────────
+let modalCb;
+function openModal(title, body, cb) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').textContent = body;
+  modalCb = cb;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalConfirm').onclick = () => { closeModal(); cb(); };
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ── SEARCH ─────────────────────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', function() {
+  renderMenu(this.value);
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────
+renderMenu();
+updateBadge();
+</script>
+
+<!-- SERVICE WORKER REGISTER -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
