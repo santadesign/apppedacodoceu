@@ -1,7 +1,7 @@
 {
   "name": "Pedaço do Céu Comandas",
-  "short_name": "Pedaço Céu",
-  "start_url": "./app.html",
+  "start_url": "/apppedacodoceu/",
+  "scope": "/apppedacodoceu/",
   "display": "standalone",
   "background_color": "#fdf6ec",
   "theme_color": "#8b1e22",
