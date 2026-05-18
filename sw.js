@@ -1,29 +1,31 @@
 const CACHE_NAME = 'pedaco-do-ceu-v1';
-
-// Arquivos que serão salvos no celular para funcionar offline
-const ASSETS_TO_CACHE = [
+const ASSETS = [
   './',
-  './app.html', 
+  './index.html',
   './manifest.json',
-  './icon-192.png',
+  './sw.js',
+  './icon-192.png'
   './icon-512.png'
 ];
 
-// Instala o service worker e salva os arquivos no cache
+// Instalação e Cache
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
+      return cache.addAll(ASSETS);
     })
   );
 });
 
-// Intercepta as requisições da internet. Se não tiver internet, puxa do cache!
+// Intercepta as requisições para rodar offline
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
-      // Retorna o arquivo do cache se existir, senão tenta baixar da rede
+      // Retorna o arquivo do cache, ou tenta buscar na rede
       return response || fetch(event.request);
+    }).catch(() => {
+      // Opcional: retornar uma página de erro customizada caso não esteja no cache
+      return caches.match('./index.html');
     })
   );
 });
