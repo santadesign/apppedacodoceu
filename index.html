@@ -466,6 +466,51 @@
     font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
     cursor: pointer; margin-bottom: 12px; width: 100%;
   }
+
+  /* ── NEIGHBORHOOD SELECTOR ── */
+  .bairro-select-wrap {
+    position: relative;
+    margin-top: 8px;
+  }
+  .bairro-select {
+    width: 100%;
+    border: 2px solid var(--border);
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px 40px 12px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--dark);
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .bairro-select:focus { border-color: var(--red); }
+  .bairro-select.selected { border-color: var(--red); background: #fff8f8; }
+  .bairro-select-arrow {
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted); pointer-events: none;
+  }
+
+  .delivery-fee-card {
+    display: none;
+    background: linear-gradient(135deg, #fff1f1 0%, #fff8f8 100%);
+    border: 1.5px solid var(--red);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-top: 8px;
+    gap: 10px;
+    align-items: center;
+  }
+  .delivery-fee-card.show { display: flex; }
+  .delivery-fee-icon { font-size: 22px; flex-shrink: 0; }
+  .delivery-fee-info { flex: 1; }
+  .delivery-fee-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
+  .delivery-fee-value { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--red); font-weight: 700; margin-top: 1px; }
+  .delivery-fee-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
 </style>
 </head>
 <body>
@@ -586,12 +631,39 @@ const PAYMENT_OPTS = [
   { id: 'outros', label: 'Outros', icon: '🔄' },
 ];
 
+// ── DELIVERY ZONES ────────────────────────────────────────────────────
+const DELIVERY_ZONES = [
+  // Mauá
+  { bairro: 'Capuava',            cidade: 'Mauá',        taxa: 3,  min: 30, max: 50 },
+  { bairro: 'Jardim Araguaia',    cidade: 'Mauá',        taxa: 2,  min: 40, max: 50 },
+  { bairro: 'Jardim Camila',      cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
+  { bairro: 'Jardim Pedroso',     cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
+  { bairro: 'Jardim Pilar',       cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
+  { bairro: 'Jardim São José',    cidade: 'São Paulo',   taxa: 10, min: 30, max: 50 },
+  { bairro: 'Paranavaí',          cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
+  { bairro: 'Parque São Vicente',  cidade: 'Mauá',        taxa: 2,  min: 40, max: 50 },
+  { bairro: 'Sertãozinho',        cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
+  { bairro: 'Vila Assis Brasil',  cidade: 'Mauá',        taxa: 5,  min: 30, max: 50 },
+  { bairro: 'Vila Bocaina',       cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
+  { bairro: 'Vila Mercedes',      cidade: 'Mauá',        taxa: 8,  min: 30, max: 50 },
+  { bairro: 'Vila Nova Mauá',     cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
+  // Santo André
+  { bairro: 'Casa Branca',        cidade: 'Santo André', taxa: 6,  min: 30, max: 50 },
+  { bairro: 'Cidade São Jorge',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
+  { bairro: 'Parque Capuava',     cidade: 'Santo André', taxa: 6,  min: 30, max: 50 },
+  { bairro: 'Parque Marajoara',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
+  { bairro: 'Vila Homero Thon',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
+  // São Paulo
+  { bairro: 'Jardim São José',    cidade: 'São Paulo',   taxa: 10, min: 30, max: 50 },
+].sort((a, b) => a.cidade.localeCompare(b.cidade) || a.bairro.localeCompare(b.bairro));
+
 // ── STATE ─────────────────────────────────────────────────────────────
 let cart = [];
 let payment = '';
 let delivery = false;
 let addrStreet = '', addrNum = '', addrObs = '', orderObs = '';
 let troco = '';
+let selectedBairro = null; // { bairro, cidade, taxa, min, max }
 
 // ── HISTORY ───────────────────────────────────────────────────────────
 function loadHistory() {
@@ -694,8 +766,25 @@ function changeQty(key, delta) {
   renderCart();
 }
 
-function cartTotal() {
+function cartSubtotal() {
   return cart.reduce((s, c) => s + c.price * c.qty, 0);
+}
+
+function deliveryFee() {
+  return (delivery && selectedBairro) ? selectedBairro.taxa : 0;
+}
+
+function cartTotal() {
+  return cartSubtotal() + deliveryFee();
+}
+
+function selectBairro(idx) {
+  if (idx === '') {
+    selectedBairro = null;
+  } else {
+    selectedBairro = DELIVERY_ZONES[parseInt(idx)];
+  }
+  renderCart();
 }
 
 // ── RENDER CART ────────────────────────────────────────────────────────
@@ -739,6 +828,24 @@ function renderCart() {
 
   const addrFields = `
     <div class="addr-fields ${delivery?'show':''}" id="addrFields">
+      <div class="bairro-select-wrap">
+        <select class="bairro-select ${selectedBairro?'selected':''}" onchange="selectBairro(this.value)">
+          <option value="">📍 Selecione o bairro de entrega…</option>
+          ${DELIVERY_ZONES.map((z, i) => {
+            const isSelected = selectedBairro && selectedBairro.bairro === z.bairro && selectedBairro.cidade === z.cidade;
+            return `<option value="${i}" ${isSelected?'selected':''}>${z.bairro} — ${z.cidade}</option>`;
+          }).join('')}
+        </select>
+        <svg class="bairro-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+      <div class="delivery-fee-card ${selectedBairro?'show':''}">
+        <div class="delivery-fee-icon">🛵</div>
+        <div class="delivery-fee-info">
+          <div class="delivery-fee-label">Taxa de entrega</div>
+          <div class="delivery-fee-value">R$ ${selectedBairro ? selectedBairro.taxa.toFixed(2).replace('.',',') : '0,00'}</div>
+          ${selectedBairro ? `<div class="delivery-fee-time">⏱ ${selectedBairro.min} a ${selectedBairro.max} min</div>` : ''}
+        </div>
+      </div>
       <input class="text-input" type="text" placeholder="Rua / Avenida" id="addrStreet" value="${addrStreet}" oninput="addrStreet=this.value">
       <div class="num-obs-row">
         <input class="text-input" type="text" placeholder="Nº" id="addrNum" value="${addrNum}" oninput="addrNum=this.value">
@@ -746,13 +853,16 @@ function renderCart() {
       </div>
     </div>`;
 
-  const total = cartTotal();
+  const sub = cartSubtotal();
+  const fee = deliveryFee();
+  const total = sub + fee;
 
   el.innerHTML = `
     <div class="cart-items">${itemsHtml}</div>
 
     <div class="cart-total-box">
-      <div class="total-row"><span>Itens (${cart.reduce((s,c)=>s+c.qty,0)})</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
+      <div class="total-row"><span>Itens (${cart.reduce((s,c)=>s+c.qty,0)})</span><span>R$ ${sub.toFixed(2).replace('.',',')}</span></div>
+      ${delivery && selectedBairro ? `<div class="total-row"><span>🛵 Taxa de entrega</span><span>R$ ${fee.toFixed(2).replace('.',',')}</span></div>` : ''}
       <div class="total-row big"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
     </div>
 
@@ -793,6 +903,7 @@ function selectPayment(id) {
 
 function toggleDelivery() {
   delivery = !delivery;
+  if (!delivery) selectedBairro = null;
   renderCart();
 }
 
@@ -800,6 +911,7 @@ function toggleDelivery() {
 function confirmOrder() {
   if (cart.length === 0) { showToast('Adicione itens primeiro!'); return; }
   if (!payment) { showToast('Selecione a forma de pagamento!'); return; }
+  if (delivery && !selectedBairro) { showToast('Selecione o bairro de entrega!'); return; }
   if (delivery && !addrStreet.trim()) { showToast('Informe o endereço de entrega!'); return; }
 
   const history = loadHistory();
@@ -810,9 +922,12 @@ function confirmOrder() {
     date: now.toLocaleDateString('pt-BR'),
     time: now.toLocaleTimeString('pt-BR', {hour:'2-digit',minute:'2-digit'}),
     items: [...cart],
+    subtotal: cartSubtotal(),
+    deliveryFee: deliveryFee(),
     total: cartTotal(),
     payment,
     delivery,
+    bairro: selectedBairro ? `${selectedBairro.bairro} – ${selectedBairro.cidade}` : '',
     address: delivery ? `${addrStreet}${addrNum ? ', '+addrNum : ''}${addrObs ? ' – '+addrObs : ''}` : '',
     obs: orderObs,
     troco: payment === 'dinheiro' ? troco : '',
@@ -825,6 +940,7 @@ function confirmOrder() {
   cart = [];
   payment = '';
   delivery = false;
+  selectedBairro = null;
   addrStreet = addrNum = addrObs = orderObs = troco = '';
   updateBadge();
   showToast('✅ Pedido #' + num + ' registrado!');
@@ -849,6 +965,9 @@ function printOrder(order) {
     `${i.qty}x ${i.name}\n   R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}`
   ).join('\n');
 
+  const feeRow = (order.deliveryFee > 0)
+    ? `<div>TAXA ENTREGA: R$ ${order.deliveryFee.toFixed(2).replace('.',',')}</div>` : '';
+
   const receipt = `
     <div style="font-family:'Courier New',monospace;font-size:12px;width:72mm;padding:8px">
       <div style="text-align:center;font-weight:bold;font-size:14px">PEDAÇO DO CÉU</div>
@@ -859,9 +978,11 @@ function printOrder(order) {
       <div>${line}</div>
       <pre style="margin:0;font-family:inherit">${rows}</pre>
       <div>${line}</div>
+      ${order.subtotal !== undefined ? `<div>SUBTOTAL: R$ ${order.subtotal.toFixed(2).replace('.',',')}</div>` : ''}
+      ${feeRow}
       <div style="font-weight:bold;font-size:13px">TOTAL: R$ ${order.total.toFixed(2).replace('.',',')}</div>
       <div>PAGAMENTO: ${payLabel}${order.troco ? '\nTROCO PARA: R$ '+Number(order.troco).toFixed(2).replace('.',',') : ''}</div>
-      ${order.delivery ? `<div>${line}\nENTREGA: ${order.address}</div>` : '<div>RETIRADA NO LOCAL</div>'}
+      ${order.delivery ? `<div>${line}\nENTREGA: ${order.bairro ? order.bairro+'\n' : ''}${order.address}</div>` : '<div>RETIRADA NO LOCAL</div>'}
       ${order.obs ? `<div>${line}\nOBS: ${order.obs}</div>` : ''}
       <div style="text-align:center;margin-top:8px">Obrigado! 🙏</div>
     </div>
@@ -905,7 +1026,7 @@ function renderHistory() {
           ${rows}
           <div style="margin-top:8px">
             <div class="hist-pay-tag">${payIcon(o.payment)} ${payLabel(o.payment)}${o.troco ? ' · troco p/ R$'+Number(o.troco).toFixed(2).replace('.',',') : ''}</div>
-            ${o.delivery && o.address ? `<div class="hist-addr">📍 ${o.address}</div>` : '<div class="hist-addr">🏠 Retirada no local</div>'}
+            ${o.delivery && o.address ? `<div class="hist-addr">📍 ${o.bairro ? o.bairro+' · ' : ''}${o.address}</div>` : '<div class="hist-addr">🏠 Retirada no local</div>'}
             ${o.obs ? `<div class="hist-addr">📝 ${o.obs}</div>` : ''}
           </div>
           <div class="hist-actions">
