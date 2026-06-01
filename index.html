@@ -351,11 +351,10 @@
     #print-receipt, #print-receipt * { visibility: visible !important; }
     #print-receipt {
       display: block !important;
-      position: fixed;
+      position: absolute;
       top: 0; left: 0;
       width: 80mm;
-      transform-origin: top left;
-      zoom: 1.2;
+      font-size: 13.2px; /* 11px base × 1.2 */
     }
   }
   #print-receipt { display: none; }
