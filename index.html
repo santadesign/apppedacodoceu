@@ -40,7 +40,6 @@
     overflow-x: hidden;
   }
 
-  /* ── TOP HEADER ── */
   .header {
     background: var(--red);
     color: var(--white);
@@ -68,7 +67,6 @@
   .header-badge.bump { animation: bump 0.3s ease; }
   @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.35)} }
 
-  /* ── BOTTOM NAV ── */
   .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0;
     background: var(--white);
@@ -90,11 +88,9 @@
   .nav-btn.active { color: var(--red); }
   .nav-btn svg { width: 22px; height: 22px; }
 
-  /* ── SCREENS ── */
   .screen { display: none; padding: 16px 16px 90px; }
   .screen.active { display: block; }
 
-  /* ── SECTION HEADERS ── */
   .section-label {
     font-family: 'Playfair Display', serif;
     font-size: 18px; color: var(--red);
@@ -105,7 +101,6 @@
   }
   .section-label:first-child { margin-top: 4px; }
 
-  /* ── MENU ITEMS ── */
   .menu-item {
     background: var(--white);
     border-radius: var(--radius-sm);
@@ -147,7 +142,6 @@
   .size-btn .size-label { font-weight: 700; font-size: 14px; color: var(--red); }
   .size-btn .size-price { font-size: 12px; color: var(--muted); }
 
-  /* Simple items (no sizes) */
   .simple-add-btn {
     background: var(--red);
     color: var(--white);
@@ -162,7 +156,6 @@
   }
   .simple-add-btn:active { background: var(--red-dark); }
 
-  /* ── CART PANEL (screen) ── */
   .cart-empty {
     text-align: center; padding: 60px 20px;
     color: var(--muted);
@@ -199,7 +192,6 @@
   .qty-btn:active { background: var(--red); color: var(--white); }
   .qty-num { font-weight: 700; min-width: 18px; text-align: center; font-size: 15px; }
 
-  /* ── FORM FIELDS ── */
   .form-section { margin-top: 16px; }
   .form-label {
     font-size: 12px; font-weight: 600;
@@ -244,12 +236,8 @@
     resize: vertical;
   }
   .text-input:focus { border-color: var(--red); }
+  .obs-input { min-height: 70px; }
 
-  .obs-input {
-    min-height: 70px;
-  }
-
-  /* ── TOTALS ── */
   .cart-total-box {
     background: var(--white);
     border: 1px solid var(--border);
@@ -268,7 +256,6 @@
     margin-bottom: 0;
   }
 
-  /* ── BUTTONS ── */
   .btn-primary {
     width: 100%;
     background: var(--red);
@@ -312,7 +299,6 @@
     transition: all 0.15s;
   }
 
-  /* ── HISTORY ── */
   .history-empty {
     text-align: center; padding: 60px 20px;
     color: var(--muted);
@@ -357,30 +343,24 @@
   .hist-btn-print { background: var(--red); color: var(--white); }
   .hist-btn-del { background: #fce8e8; color: #c0392b; }
 
-/* ── RECEIPT PRINT AREA ── */
-@media print {
-  body * { visibility: hidden !important; }
-  #print-receipt, #print-receipt * { visibility: visible !important; }
-  
-  #print-receipt {
-    display: block !important; 
-    position: absolute; 
-    top: 0; 
-    left: 0;
-    width: 80mm;
-    font-family: 'Courier New', monospace;
-    
-    /* ALTERAÇÕES AQUI: */
-    font-size: 18px;       /* Aumentado de 12px para 15px (mude para 14px ou 16px se preferir) */
-    line-height: 1.3;      /* Garante um espaçamento vertical bonito entre as linhas maiores */
-    font-weight: bold;     /* Opcional: deixa em negrito se quiser destacar ainda mais na térmica */
-    
-    color: #000;
+  /* ── PRINT AREA ── */
+  /* The trick: scale the receipt container 2.5x on print so the text renders large
+     without fighting the printer driver's font-size interpretation */
+  @media print {
+    body * { visibility: hidden !important; }
+    #print-receipt, #print-receipt * { visibility: visible !important; }
+    #print-receipt {
+      display: block !important;
+      position: fixed;
+      top: 0; left: 0;
+      width: 80mm;
+      /* Scale 2.5x from top-left origin so it fills the paper width */
+      transform-origin: top left;
+      transform: scale(2.5);
+    }
   }
-}
-#print-receipt { display: none; }
+  #print-receipt { display: none; }
 
-  /* ── TOAST ── */
   .toast {
     position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%) translateY(20px);
     background: var(--dark); color: var(--white);
@@ -391,7 +371,6 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ── CONFIRM MODAL ── */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
     background: rgba(0,0,0,0.5);
@@ -408,7 +387,6 @@
   .modal-body { font-size: 14px; color: var(--muted); margin-bottom: 20px; line-height: 1.6; }
   .modal-actions { display: flex; gap: 10px; }
 
-  /* order counter badge next to nav */
   .nav-badge {
     position: absolute; top: 4px; right: 50%;
     transform: translateX(12px);
@@ -418,28 +396,33 @@
     border-radius: 8px; padding: 0 4px;
     display: flex; align-items: center; justify-content: center;
   }
-
   .nav-btn { position: relative; }
-
   .obs-row { margin-top: 12px; }
 
-  .delivery-toggle {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--white); border: 2px solid var(--border);
-    border-radius: 10px; padding: 12px 14px;
-    cursor: pointer; transition: border-color 0.15s;
-    margin-bottom: 8px;
+  /* ── SERVICE TYPE SELECTOR ── */
+  .service-type-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
   }
-  .delivery-toggle.active { border-color: var(--red); }
-  .toggle-circle {
-    width: 22px; height: 22px; border-radius: 50%;
+  .service-btn {
     border: 2px solid var(--border);
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.15s; flex-shrink: 0;
+    background: var(--white);
+    border-radius: 10px;
+    padding: 12px 6px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 600;
+    color: var(--dark);
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: all 0.15s;
+    text-align: center;
   }
-  .delivery-toggle.active .toggle-circle { border-color: var(--red); background: var(--red); }
-  .toggle-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--white); }
-  .delivery-toggle span { font-size: 14px; font-weight: 500; }
+  .service-btn .svc-icon { font-size: 20px; }
+  .service-btn.selected {
+    border-color: var(--red);
+    background: #fff1f1;
+    color: var(--red);
+  }
 
   .addr-fields { display: none; flex-direction: column; gap: 8px; }
   .addr-fields.show { display: flex; }
@@ -448,7 +431,6 @@
   .num-obs-row .text-input:first-child { width: 100px; flex-shrink: 0; }
   .num-obs-row .text-input:last-child { flex: 1; }
 
-  /* search bar */
   .search-wrap { position: relative; margin-bottom: 12px; }
   .search-input {
     width: 100%; border: 2px solid var(--border);
@@ -467,10 +449,9 @@
     cursor: pointer; margin-bottom: 12px; width: 100%;
   }
 
-  /* ── NEIGHBORHOOD SELECTOR ── */
   .bairro-select-wrap {
     position: relative;
-    margin-top: 8px;
+    margin-top: 0;
   }
   .bairro-select {
     width: 100%;
@@ -501,7 +482,6 @@
     border: 1.5px solid var(--red);
     border-radius: 10px;
     padding: 12px 14px;
-    margin-top: 8px;
     gap: 10px;
     align-items: center;
   }
@@ -515,7 +495,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div>
     <div class="header-title">🍱 Pedaço do Céu</div>
@@ -524,14 +503,11 @@
   <div class="header-badge" id="headerBadge">0</div>
 </div>
 
-<!-- SCREENS -->
 <div class="screen active" id="screen-menu">
-
   <div class="search-wrap">
     <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
     <input class="search-input" id="searchInput" type="search" placeholder="Buscar item...">
   </div>
-
   <div id="menuList"></div>
 </div>
 
@@ -543,7 +519,6 @@
   <div id="historyContent"></div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" id="nav-menu" onclick="showScreen('menu')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
@@ -560,10 +535,8 @@
   </button>
 </nav>
 
-<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<!-- CONFIRM MODAL -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal-box">
     <div class="modal-title" id="modalTitle">Confirmar</div>
@@ -575,12 +548,18 @@
   </div>
 </div>
 
-<!-- PRINT AREA -->
 <div id="print-receipt"></div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────
+const CNPJ = '58.279.719/0001-93';
+
 const MENU = [
+  {
+    section: '🍽️ Self Service',
+    items: [
+      { id: 'ss1', name: 'Self Service (por pessoa)', desc: 'Prato feito no buffet — valor por pessoa', price: 26.90 },
+    ]
+  },
   {
     section: '🍱 Marmitex',
     items: [
@@ -631,15 +610,19 @@ const PAYMENT_OPTS = [
   { id: 'outros', label: 'Outros', icon: '🔄' },
 ];
 
-// ── DELIVERY ZONES ────────────────────────────────────────────────────
+// SERVICE TYPES
+const SERVICE_TYPES = [
+  { id: 'local',    label: 'No local',  icon: '🪑' },
+  { id: 'retirada', label: 'Retirada',  icon: '🏠' },
+  { id: 'entrega',  label: 'Entrega',   icon: '🛵' },
+];
+
 const DELIVERY_ZONES = [
-  // Mauá
   { bairro: 'Capuava',            cidade: 'Mauá',        taxa: 3,  min: 30, max: 50 },
   { bairro: 'Jardim Araguaia',    cidade: 'Mauá',        taxa: 2,  min: 40, max: 50 },
   { bairro: 'Jardim Camila',      cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
   { bairro: 'Jardim Pedroso',     cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
   { bairro: 'Jardim Pilar',       cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
-  { bairro: 'Jardim São José',    cidade: 'São Paulo',   taxa: 10, min: 30, max: 50 },
   { bairro: 'Paranavaí',          cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
   { bairro: 'Parque São Vicente',  cidade: 'Mauá',        taxa: 2,  min: 40, max: 50 },
   { bairro: 'Sertãozinho',        cidade: 'Mauá',        taxa: 4,  min: 30, max: 50 },
@@ -647,31 +630,27 @@ const DELIVERY_ZONES = [
   { bairro: 'Vila Bocaina',       cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
   { bairro: 'Vila Mercedes',      cidade: 'Mauá',        taxa: 8,  min: 30, max: 50 },
   { bairro: 'Vila Nova Mauá',     cidade: 'Mauá',        taxa: 6,  min: 30, max: 50 },
-  // Santo André
   { bairro: 'Casa Branca',        cidade: 'Santo André', taxa: 6,  min: 30, max: 50 },
   { bairro: 'Cidade São Jorge',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
   { bairro: 'Parque Capuava',     cidade: 'Santo André', taxa: 6,  min: 30, max: 50 },
   { bairro: 'Parque Marajoara',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
   { bairro: 'Vila Homero Thon',   cidade: 'Santo André', taxa: 4,  min: 30, max: 50 },
-  // São Paulo
   { bairro: 'Jardim São José',    cidade: 'São Paulo',   taxa: 10, min: 30, max: 50 },
 ].sort((a, b) => a.cidade.localeCompare(b.cidade) || a.bairro.localeCompare(b.bairro));
 
-// ── STATE ─────────────────────────────────────────────────────────────
+// ── STATE
 let cart = [];
 let payment = '';
-let delivery = false;
+let serviceType = ''; // 'local' | 'retirada' | 'entrega'
 let addrStreet = '', addrNum = '', addrObs = '', orderObs = '';
 let troco = '';
-let selectedBairro = null; // { bairro, cidade, taxa, min, max }
+let selectedBairro = null;
 
-// ── HISTORY ───────────────────────────────────────────────────────────
 function loadHistory() {
   try { return JSON.parse(localStorage.getItem('pdc_history') || '[]'); } catch { return []; }
 }
 function saveHistory(h) { localStorage.setItem('pdc_history', JSON.stringify(h)); }
 
-// ── RENDER MENU ────────────────────────────────────────────────────────
 function renderMenu(filter='') {
   const list = document.getElementById('menuList');
   let html = '';
@@ -733,16 +712,12 @@ function toggleItem(id) {
   if (el) el.classList.toggle('open');
 }
 
-// ── CART LOGIC ────────────────────────────────────────────────────────
 function addToCart(id, size, price) {
   const item = MENU.flatMap(s => s.items).find(i => i.id === id);
   const key = id + '_' + size;
   const existing = cart.find(c => c.key === key);
-  if (existing) {
-    existing.qty++;
-  } else {
-    cart.push({ key, id, name: item.name + (size ? ` (${size})` : ''), price, qty: 1 });
-  }
+  if (existing) { existing.qty++; }
+  else { cart.push({ key, id, name: item.name + (size ? ` (${size})` : ''), price, qty: 1 }); }
   updateBadge();
   showToast('✅ ' + item.name + (size ? ` ${size}` : '') + ' adicionado!');
 }
@@ -766,28 +741,21 @@ function changeQty(key, delta) {
   renderCart();
 }
 
-function cartSubtotal() {
-  return cart.reduce((s, c) => s + c.price * c.qty, 0);
-}
-
-function deliveryFee() {
-  return (delivery && selectedBairro) ? selectedBairro.taxa : 0;
-}
-
-function cartTotal() {
-  return cartSubtotal() + deliveryFee();
-}
+function cartSubtotal() { return cart.reduce((s, c) => s + c.price * c.qty, 0); }
+function deliveryFee() { return (serviceType === 'entrega' && selectedBairro) ? selectedBairro.taxa : 0; }
+function cartTotal() { return cartSubtotal() + deliveryFee(); }
 
 function selectBairro(idx) {
-  if (idx === '') {
-    selectedBairro = null;
-  } else {
-    selectedBairro = DELIVERY_ZONES[parseInt(idx)];
-  }
+  selectedBairro = idx === '' ? null : DELIVERY_ZONES[parseInt(idx)];
   renderCart();
 }
 
-// ── RENDER CART ────────────────────────────────────────────────────────
+function selectServiceType(type) {
+  serviceType = type;
+  if (type !== 'entrega') selectedBairro = null;
+  renderCart();
+}
+
 function renderCart() {
   const el = document.getElementById('cartContent');
   if (cart.length === 0) {
@@ -814,6 +782,12 @@ function renderCart() {
     </div>
   `).join('');
 
+  const svcHtml = SERVICE_TYPES.map(s => `
+    <button class="service-btn ${serviceType===s.id?'selected':''}" onclick="selectServiceType('${s.id}')">
+      <span class="svc-icon">${s.icon}</span>${s.label}
+    </button>
+  `).join('');
+
   const payHtml = PAYMENT_OPTS.map(p => `
     <button class="pay-btn ${payment===p.id?'selected':''}" onclick="selectPayment('${p.id}')">
       <span class="pay-icon">${p.icon}</span> ${p.label}
@@ -826,14 +800,14 @@ function renderCart() {
       <input class="text-input" type="number" inputmode="decimal" placeholder="Ex: 50,00" id="trocoInput" value="${troco}" oninput="troco=this.value">
     </div>` : '';
 
-  const addrFields = `
-    <div class="addr-fields ${delivery?'show':''}" id="addrFields">
+  const addrFields = serviceType === 'entrega' ? `
+    <div class="addr-fields show" id="addrFields">
       <div class="bairro-select-wrap">
         <select class="bairro-select ${selectedBairro?'selected':''}" onchange="selectBairro(this.value)">
           <option value="">📍 Selecione o bairro de entrega…</option>
           ${DELIVERY_ZONES.map((z, i) => {
-            const isSelected = selectedBairro && selectedBairro.bairro === z.bairro && selectedBairro.cidade === z.cidade;
-            return `<option value="${i}" ${isSelected?'selected':''}>${z.bairro} — ${z.cidade}</option>`;
+            const isSel = selectedBairro && selectedBairro.bairro === z.bairro && selectedBairro.cidade === z.cidade;
+            return `<option value="${i}" ${isSel?'selected':''}>${z.bairro} — ${z.cidade}</option>`;
           }).join('')}
         </select>
         <svg class="bairro-select-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
@@ -851,7 +825,7 @@ function renderCart() {
         <input class="text-input" type="text" placeholder="Nº" id="addrNum" value="${addrNum}" oninput="addrNum=this.value">
         <input class="text-input" type="text" placeholder="Complemento (apto, ref...)" id="addrObs" value="${addrObs}" oninput="addrObs=this.value">
       </div>
-    </div>`;
+    </div>` : '';
 
   const sub = cartSubtotal();
   const fee = deliveryFee();
@@ -862,8 +836,14 @@ function renderCart() {
 
     <div class="cart-total-box">
       <div class="total-row"><span>Itens (${cart.reduce((s,c)=>s+c.qty,0)})</span><span>R$ ${sub.toFixed(2).replace('.',',')}</span></div>
-      ${delivery && selectedBairro ? `<div class="total-row"><span>🛵 Taxa de entrega</span><span>R$ ${fee.toFixed(2).replace('.',',')}</span></div>` : ''}
+      ${serviceType === 'entrega' && selectedBairro ? `<div class="total-row"><span>🛵 Taxa de entrega</span><span>R$ ${fee.toFixed(2).replace('.',',')}</span></div>` : ''}
       <div class="total-row big"><span>Total</span><span>R$ ${total.toFixed(2).replace('.',',')}</span></div>
+    </div>
+
+    <div class="form-section">
+      <label class="form-label">Tipo de Atendimento</label>
+      <div class="service-type-grid">${svcHtml}</div>
+      ${addrFields || ''}
     </div>
 
     <div class="form-section">
@@ -871,15 +851,6 @@ function renderCart() {
       <div class="payment-grid">${payHtml}</div>
     </div>
     ${trocoField}
-
-    <div class="form-section">
-      <label class="form-label">Entrega</label>
-      <div class="delivery-toggle ${delivery?'active':''}" onclick="toggleDelivery()">
-        <div class="toggle-circle"><div class="toggle-dot"></div></div>
-        <span>${delivery ? 'Com entrega' : 'Retirar no local'}</span>
-      </div>
-      ${addrFields}
-    </div>
 
     <div class="form-section obs-row">
       <label class="form-label">Observações do pedido</label>
@@ -896,23 +867,14 @@ function renderCart() {
   `;
 }
 
-function selectPayment(id) {
-  payment = id;
-  renderCart();
-}
+function selectPayment(id) { payment = id; renderCart(); }
 
-function toggleDelivery() {
-  delivery = !delivery;
-  if (!delivery) selectedBairro = null;
-  renderCart();
-}
-
-// ── CONFIRM ORDER ──────────────────────────────────────────────────────
 function confirmOrder() {
   if (cart.length === 0) { showToast('Adicione itens primeiro!'); return; }
   if (!payment) { showToast('Selecione a forma de pagamento!'); return; }
-  if (delivery && !selectedBairro) { showToast('Selecione o bairro de entrega!'); return; }
-  if (delivery && !addrStreet.trim()) { showToast('Informe o endereço de entrega!'); return; }
+  if (!serviceType) { showToast('Selecione o tipo de atendimento!'); return; }
+  if (serviceType === 'entrega' && !selectedBairro) { showToast('Selecione o bairro de entrega!'); return; }
+  if (serviceType === 'entrega' && !addrStreet.trim()) { showToast('Informe o endereço de entrega!'); return; }
 
   const history = loadHistory();
   const num = history.length + 1;
@@ -926,9 +888,9 @@ function confirmOrder() {
     deliveryFee: deliveryFee(),
     total: cartTotal(),
     payment,
-    delivery,
+    serviceType,
     bairro: selectedBairro ? `${selectedBairro.bairro} – ${selectedBairro.cidade}` : '',
-    address: delivery ? `${addrStreet}${addrNum ? ', '+addrNum : ''}${addrObs ? ' – '+addrObs : ''}` : '',
+    address: serviceType === 'entrega' ? `${addrStreet}${addrNum ? ', '+addrNum : ''}${addrObs ? ' – '+addrObs : ''}` : '',
     obs: orderObs,
     troco: payment === 'dinheiro' ? troco : '',
   };
@@ -939,7 +901,7 @@ function confirmOrder() {
 
   cart = [];
   payment = '';
-  delivery = false;
+  serviceType = '';
   selectedBairro = null;
   addrStreet = addrNum = addrObs = orderObs = troco = '';
   updateBadge();
@@ -951,6 +913,7 @@ function confirmClear() {
   openModal('Limpar comanda?', 'Todos os itens adicionados serão removidos.', () => {
     cart = [];
     payment = '';
+    serviceType = '';
     updateBadge();
     renderCart();
     showToast('Comanda limpa!');
@@ -958,40 +921,125 @@ function confirmClear() {
 }
 
 // ── PRINT ─────────────────────────────────────────────────────────────
+// Receipt uses base font-size: 11px on 72mm.
+// @media print scales the container 2.5x via transform, making effective size ~27.5px.
+// This bypasses printer driver font-size interference.
 function printOrder(order) {
   const payLabel = PAYMENT_OPTS.find(p => p.id === order.payment)?.label || order.payment;
-  const line = '────────────────────────';
-  const rows = order.items.map(i =>
-    `${i.qty}x ${i.name}\n   R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}`
-  ).join('\n');
+  
+  // Service type label for receipt
+  const svcMap = { local: 'CONSUMO NO LOCAL', retirada: 'RETIRADA NO LOCAL', entrega: 'ENTREGA' };
+  const svcLabel = svcMap[order.serviceType] || order.serviceType.toUpperCase();
 
-  const feeRow = (order.deliveryFee > 0)
-    ? `<div>TAXA ENTREGA: R$ ${order.deliveryFee.toFixed(2).replace('.',',')}</div>` : '';
+  const rows = order.items.map(i => {
+    const total = (i.price * i.qty).toFixed(2).replace('.', ',');
+    const unit  = i.price.toFixed(2).replace('.', ',');
+    return `<tr>
+      <td style="padding:3px 0;vertical-align:top">${i.qty}x ${i.name}</td>
+      <td style="text-align:right;padding:3px 0 3px 6px;white-space:nowrap;vertical-align:top">R$&nbsp;${total}</td>
+    </tr>`;
+  }).join('');
+
+  const feeRow = order.deliveryFee > 0
+    ? `<tr><td>Taxa de entrega</td><td style="text-align:right">R$ ${order.deliveryFee.toFixed(2).replace('.',',')}</td></tr>` : '';
+
+  const trocoRow = (order.payment === 'dinheiro' && order.troco)
+    ? `<tr><td style="padding-top:3px">Troco para:</td><td style="text-align:right;padding-top:3px">R$ ${Number(order.troco).toFixed(2).replace('.',',')}</td></tr>` : '';
+
+  const addrBlock = order.serviceType === 'entrega'
+    ? `<div style="margin-top:8px;border-top:1px dashed #000;padding-top:6px">
+        <div style="font-weight:bold">ENTREGA</div>
+        ${order.bairro ? `<div>${order.bairro}</div>` : ''}
+        ${order.address ? `<div>${order.address}</div>` : ''}
+       </div>`
+    : `<div style="margin-top:8px;border-top:1px dashed #000;padding-top:6px">
+        <div style="font-weight:bold">${svcLabel}</div>
+       </div>`;
+
+  const obsBlock = order.obs
+    ? `<div style="margin-top:8px;border-top:1px dashed #000;padding-top:6px">
+        <div style="font-weight:bold">OBS:</div>
+        <div>${order.obs}</div>
+       </div>` : '';
 
   const receipt = `
-    <div style="font-family:'Courier New',monospace;font-size:12px;width:72mm;padding:8px">
-      <div style="text-align:center;font-weight:bold;font-size:14px">PEDAÇO DO CÉU</div>
-      <div style="text-align:center;font-size:11px">Rua Carlos de Campos, 255<br>Mauá – SP  |  (11) 4514-9181</div>
-      <div style="text-align:center;margin:4px 0">${line}</div>
-      <div>PEDIDO #${order.num}</div>
-      <div>${order.date} às ${order.time}</div>
-      <div>${line}</div>
-      <pre style="margin:0;font-family:inherit">${rows}</pre>
-      <div>${line}</div>
-      ${order.subtotal !== undefined ? `<div>SUBTOTAL: R$ ${order.subtotal.toFixed(2).replace('.',',')}</div>` : ''}
-      ${feeRow}
-      <div style="font-weight:bold;font-size:13px">TOTAL: R$ ${order.total.toFixed(2).replace('.',',')}</div>
-      <div>PAGAMENTO: ${payLabel}${order.troco ? '\nTROCO PARA: R$ '+Number(order.troco).toFixed(2).replace('.',',') : ''}</div>
-      ${order.delivery ? `<div>${line}\nENTREGA: ${order.bairro ? order.bairro+'\n' : ''}${order.address}</div>` : '<div>RETIRADA NO LOCAL</div>'}
-      ${order.obs ? `<div>${line}\nOBS: ${order.obs}</div>` : ''}
-      <div style="text-align:center;margin-top:8px">Obrigado! 🙏</div>
+    <div style="
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 11px;
+      width: 72mm;
+      padding: 6px 4px;
+      color: #000;
+      line-height: 1.45;
+    ">
+      <!-- HEADER -->
+      <div style="text-align:center;margin-bottom:6px">
+        <div style="font-size:15px;font-weight:bold;letter-spacing:1px">PEDAÇO DO CÉU</div>
+        <div>Rua Carlos de Campos, 255 — Mauá/SP</div>
+        <div>(11) 4514-9181</div>
+        <div>CNPJ: ${CNPJ}</div>
+      </div>
+
+      <div style="border-top:1px solid #000;margin:4px 0"></div>
+
+      <!-- ORDER INFO -->
+      <div style="display:flex;justify-content:space-between">
+        <span><b>PEDIDO #${order.num}</b></span>
+        <span>${order.date}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+        <span>${svcLabel}</span>
+        <span>${order.time}</span>
+      </div>
+
+      <div style="border-top:1px dashed #000;margin:4px 0"></div>
+
+      <!-- ITEMS -->
+      <table style="width:100%;border-collapse:collapse">
+        <tbody>${rows}</tbody>
+      </table>
+
+      <div style="border-top:1px dashed #000;margin:4px 0"></div>
+
+      <!-- TOTALS -->
+      <table style="width:100%;border-collapse:collapse">
+        <tbody>
+          ${order.subtotal !== undefined && order.deliveryFee > 0 ? `<tr><td>Subtotal</td><td style="text-align:right">R$ ${order.subtotal.toFixed(2).replace('.',',')}</td></tr>` : ''}
+          ${feeRow}
+          <tr>
+            <td style="font-weight:bold;font-size:13px;padding-top:4px">TOTAL</td>
+            <td style="text-align:right;font-weight:bold;font-size:13px;padding-top:4px">R$ ${order.total.toFixed(2).replace('.',',')}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="border-top:1px dashed #000;margin:4px 0"></div>
+
+      <!-- PAYMENT -->
+      <table style="width:100%;border-collapse:collapse">
+        <tbody>
+          <tr><td>Pagamento:</td><td style="text-align:right;font-weight:bold">${payLabel}</td></tr>
+          ${trocoRow}
+        </tbody>
+      </table>
+
+      <!-- ADDRESS / SERVICE TYPE -->
+      ${addrBlock}
+
+      <!-- OBS -->
+      ${obsBlock}
+
+      <!-- FOOTER -->
+      <div style="border-top:1px solid #000;margin:8px 0 4px;text-align:center">
+        <div style="font-weight:bold;margin-top:4px">Obrigado pela preferência!</div>
+        <div>Volte sempre 🙏</div>
+      </div>
     </div>
   `;
+
   document.getElementById('print-receipt').innerHTML = receipt;
   setTimeout(() => window.print(), 100);
 }
 
-// ── HISTORY RENDER ────────────────────────────────────────────────────
 function renderHistory() {
   const el = document.getElementById('historyContent');
   const history = loadHistory();
@@ -1007,12 +1055,14 @@ function renderHistory() {
 
   const payLabel = id => PAYMENT_OPTS.find(p => p.id === id)?.label || id;
   const payIcon  = id => PAYMENT_OPTS.find(p => p.id === id)?.icon || '💳';
+  const svcMap   = { local: '🪑 No local', retirada: '🏠 Retirada', entrega: '🛵 Entrega' };
 
   let html = `<button class="hist-clear-btn" onclick="confirmClearHistory()">🗑 Limpar todo o histórico</button>`;
   history.forEach((o, idx) => {
     const rows = o.items.map(i =>
       `<div class="hist-body-row"><span>${i.qty}x ${i.name}</span><span>R$ ${(i.price*i.qty).toFixed(2).replace('.',',')}</span></div>`
     ).join('');
+    const svcLabel = svcMap[o.serviceType] || (o.delivery ? '🛵 Entrega' : '🏠 Retirada');
     html += `
       <div class="hist-item" id="hist-${idx}">
         <div class="hist-header" onclick="toggleHist(${idx})">
@@ -1026,7 +1076,7 @@ function renderHistory() {
           ${rows}
           <div style="margin-top:8px">
             <div class="hist-pay-tag">${payIcon(o.payment)} ${payLabel(o.payment)}${o.troco ? ' · troco p/ R$'+Number(o.troco).toFixed(2).replace('.',',') : ''}</div>
-            ${o.delivery && o.address ? `<div class="hist-addr">📍 ${o.bairro ? o.bairro+' · ' : ''}${o.address}</div>` : '<div class="hist-addr">🏠 Retirada no local</div>'}
+            <div class="hist-addr">${svcLabel}${o.bairro ? ' · '+o.bairro : ''}${o.address ? ' · '+o.address : ''}</div>
             ${o.obs ? `<div class="hist-addr">📝 ${o.obs}</div>` : ''}
           </div>
           <div class="hist-actions">
@@ -1060,7 +1110,6 @@ function confirmClearHistory() {
   });
 }
 
-// ── NAVIGATION ────────────────────────────────────────────────────────
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -1070,7 +1119,6 @@ function showScreen(name) {
   if (name === 'history') renderHistory();
 }
 
-// ── TOAST ──────────────────────────────────────────────────────────────
 let toastTimer;
 function showToast(msg) {
   const t = document.getElementById('toast');
@@ -1080,7 +1128,6 @@ function showToast(msg) {
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// ── MODAL ──────────────────────────────────────────────────────────────
 let modalCb;
 function openModal(title, body, cb) {
   document.getElementById('modalTitle').textContent = title;
@@ -1093,17 +1140,14 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
 }
 
-// ── SEARCH ─────────────────────────────────────────────────────────────
 document.getElementById('searchInput').addEventListener('input', function() {
   renderMenu(this.value);
 });
 
-// ── INIT ──────────────────────────────────────────────────────────────
 renderMenu();
 updateBadge();
 </script>
 
-<!-- SERVICE WORKER REGISTER -->
 <script>
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
