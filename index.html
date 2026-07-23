@@ -496,68 +496,6 @@
   .delivery-fee-label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.7px; }
   .delivery-fee-value { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--red); font-weight: 700; margin-top: 1px; }
   .delivery-fee-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
-
-  /* ── ADMIN SCREEN ── */
-  .admin-toolbar { display: flex; margin-bottom: 14px; }
-  .admin-cat-card {
-    background: var(--white);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    margin-bottom: 14px;
-    padding: 12px 14px 14px;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
-  }
-  .admin-cat-header {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 8px; margin-bottom: 8px; padding-bottom: 8px;
-    border-bottom: 2px solid var(--gold);
-  }
-  .admin-cat-name { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--red); flex: 1; min-width: 0; word-break: break-word; }
-  .admin-cat-actions, .admin-item-actions { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
-  .admin-icon-btn {
-    border: 1.5px solid var(--border);
-    background: var(--cream);
-    color: var(--dark);
-    border-radius: 7px;
-    width: 28px; height: 28px;
-    font-size: 12px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-    transition: all 0.15s;
-  }
-  .admin-icon-btn:active { transform: scale(0.92); }
-  .admin-icon-danger { border-color: #c0392b; color: #c0392b; background: #fce8e8; }
-  .admin-items-list { display: flex; flex-direction: column; gap: 8px; }
-  .admin-item-row {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 8px; padding: 8px 10px;
-    background: var(--cream);
-    border-radius: 8px;
-    transition: opacity 0.15s;
-  }
-  .admin-item-row.inactive { opacity: 0.45; }
-  .admin-item-info { min-width: 0; flex: 1; }
-  .admin-item-name { font-weight: 600; font-size: 13px; word-break: break-word; }
-  .admin-item-price { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
-
-  .admin-toggle { position: relative; display: inline-block; width: 36px; height: 20px; flex-shrink: 0; }
-  .admin-toggle input { opacity: 0; width: 0; height: 0; }
-  .admin-toggle-slider {
-    position: absolute; cursor: pointer; inset: 0;
-    background: #ccc; border-radius: 20px; transition: 0.15s;
-  }
-  .admin-toggle-slider::before {
-    content: ""; position: absolute; height: 16px; width: 16px;
-    left: 2px; bottom: 2px; background: white; border-radius: 50%;
-    transition: 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-  .admin-toggle input:checked + .admin-toggle-slider { background: var(--red); }
-  .admin-toggle input:checked + .admin-toggle-slider::before { transform: translateX(16px); }
-
-  /* ── GENERIC FORM MODAL (categorias/itens/avulso) ── */
-  #formModalOverlay .modal-box { max-height: 88vh; overflow-y: auto; }
-  .admin-size-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; }
 </style>
 </head>
 <body>
@@ -579,19 +517,11 @@
 </div>
 
 <div class="screen" id="screen-cart">
-  <button class="btn-secondary" onclick="openAvulsoModal()">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-    Adicionar Item Avulso
-  </button>
   <div id="cartContent"></div>
 </div>
 
 <div class="screen" id="screen-history">
   <div id="historyContent"></div>
-</div>
-
-<div class="screen" id="screen-admin">
-  <div id="adminContent"></div>
 </div>
 
 <nav class="bottom-nav">
@@ -608,10 +538,6 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
     Histórico
   </button>
-  <button class="nav-btn" id="nav-admin" onclick="showScreen('admin')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-    Admin
-  </button>
 </nav>
 
 <div class="toast" id="toast"></div>
@@ -627,37 +553,12 @@
   </div>
 </div>
 
-<div class="modal-overlay" id="formModalOverlay">
-  <div class="modal-box">
-    <div class="modal-title" id="formModalTitle">Título</div>
-    <div id="formModalBody"></div>
-    <div class="modal-actions" style="margin-top:18px">
-      <button class="btn-secondary" style="margin:0" onclick="closeFormModal()">Cancelar</button>
-      <button class="btn-primary" style="margin:0" id="formModalSave">Salvar</button>
-    </div>
-  </div>
-</div>
-
 <div id="print-receipt"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js">
-  const supabase = window.supabase.createClient(
-
-  "https://hctptkecpyuiieqmawvc.supabase.co",
-
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdHB0a2VjcHl1aWllcW1hd3ZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMzNTA5MjcsImV4cCI6MjA5ODkyNjkyN30.t8-MubioN6fpvuXG2HSo5MUWYxhhlpc7iLaOXgQjaMM"
-
-  );
-</script>
 <script>
 const CNPJ = '66.455.292/0001-65';
 
-// ── CARDÁPIO (agora carregado/gravado via cardapio.json) ──
-let MENU = [];
-
-// Cardápio padrão, usado apenas se cardapio.json não puder ser lido
-// (ex.: primeira execução, arquivo ausente ou sem servidor rodando)
-const MENU_FALLBACK = [
+const MENU = [
   {
     section: '🍽️ Self Service',
     items: [
@@ -705,43 +606,6 @@ const MENU_FALLBACK = [
     ]
   }
 ];
-
-// Lê o cardápio a partir do arquivo cardapio.json.
-// Se o arquivo não existir ou não puder ser lido (ex.: primeiro uso),
-// usa o cardápio padrão (MENU_FALLBACK) e tenta criar o arquivo.
-async function loadMenu(){
-
-const { data } = await supabase
-
-.from("cardapio")
-
-.select("dados")
-
-.eq("id","principal")
-
-.single();
-
-MENU = data.dados;
-
-}
-
-// Grava o cardápio atual (MENU) no arquivo cardapio.json.
-// Requer um servidor com suporte a PUT (ver server.js incluso).
-async function saveMenu(){
-
-await supabase
-
-.from("cardapio")
-
-.update({
-
-dados: MENU
-
-})
-
-.eq("id","principal");
-
-}
 
 const PAYMENT_OPTS = [
   { id: 'dinheiro', label: 'Dinheiro', icon: '💵' },
@@ -799,7 +663,7 @@ function renderMenu(filter='') {
 
   MENU.forEach(sec => {
     const filtered = sec.items.filter(i =>
-      i.active !== false && (!q || i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
+      !q || i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q)
     );
     if (!filtered.length) return;
 
@@ -1258,7 +1122,6 @@ function showScreen(name) {
   document.getElementById('nav-' + name).classList.add('active');
   if (name === 'cart') renderCart();
   if (name === 'history') renderHistory();
-  if (name === 'admin') renderAdmin();
 }
 
 let toastTimer;
@@ -1282,263 +1145,12 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
 }
 
-// ── FORM MODAL GENÉRICO (categorias / itens / item avulso) ──────────────
-function openFormModal(title, bodyHtml, onSave) {
-  document.getElementById('formModalTitle').textContent = title;
-  document.getElementById('formModalBody').innerHTML = bodyHtml;
-  document.getElementById('formModalOverlay').classList.add('open');
-  document.getElementById('formModalSave').onclick = onSave;
-}
-function closeFormModal() {
-  document.getElementById('formModalOverlay').classList.remove('open');
-}
-function genId(prefix) {
-  return prefix + '_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
-}
-
-// ── ITEM AVULSO (entra só na comanda, não é salvo no cardápio) ──────────
-function openAvulsoModal() {
-  const bodyHtml = `
-    <label class="form-label">Nome do item</label>
-    <input class="text-input" id="avName" placeholder="Ex: Porção de pão de alho" style="margin-bottom:12px">
-    <label class="form-label">Preço (R$)</label>
-    <input class="text-input" id="avPrice" type="number" inputmode="decimal" step="0.01" placeholder="Ex: 15,00" style="margin-bottom:12px">
-    <label class="form-label">Quantidade</label>
-    <input class="text-input" id="avQty" type="number" inputmode="numeric" min="1" value="1" style="margin-bottom:4px">
-  `;
-  openFormModal('Adicionar Item Avulso', bodyHtml, saveAvulsoItem);
-}
-function saveAvulsoItem() {
-  const name = document.getElementById('avName').value.trim();
-  const price = parseFloat(document.getElementById('avPrice').value) || 0;
-  const qty = Math.max(1, parseInt(document.getElementById('avQty').value) || 1);
-  if (!name) { showToast('Informe o nome do item!'); return; }
-  if (price <= 0) { showToast('Informe um preço válido!'); return; }
-
-  const key = genId('avulso');
-  cart.push({ key, id: key, name, price, qty, avulso: true });
-  updateBadge();
-  closeFormModal();
-  renderCart();
-  showToast('✅ ' + name + ' adicionado à comanda!');
-}
-
-// ── ADMIN: CATEGORIAS E ITENS DO CARDÁPIO ────────────────────────────────
-function renderAdmin() {
-  const el = document.getElementById('adminContent');
-  let html = `
-    <div class="admin-toolbar">
-      <button class="btn-primary" style="margin:0" onclick="openCategoryForm()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
-        Nova Categoria
-      </button>
-    </div>
-  `;
-
-  MENU.forEach((cat, ci) => {
-    const itemsHtml = cat.items.map((item, ii) => {
-      const priceLabel = item.sizes
-        ? item.sizes.map(s => `${s.l}: R$ ${Number(s.p).toFixed(2).replace('.', ',')}`).join(' · ')
-        : 'R$ ' + Number(item.price || 0).toFixed(2).replace('.', ',');
-      return `
-        <div class="admin-item-row ${item.active === false ? 'inactive' : ''}">
-          <div class="admin-item-info">
-            <div class="admin-item-name">${item.name}</div>
-            <div class="admin-item-price">${priceLabel}</div>
-          </div>
-          <div class="admin-item-actions">
-            <label class="admin-toggle" title="Habilitar/Desabilitar">
-              <input type="checkbox" ${item.active === false ? '' : 'checked'} onchange="toggleItemActive(${ci},${ii})">
-              <span class="admin-toggle-slider"></span>
-            </label>
-            <button class="admin-icon-btn" onclick="moveItem(${ci},${ii},-1)" title="Mover para cima">▲</button>
-            <button class="admin-icon-btn" onclick="moveItem(${ci},${ii},1)" title="Mover para baixo">▼</button>
-            <button class="admin-icon-btn" onclick="openItemForm(${ci},${ii})" title="Editar item">✏️</button>
-            <button class="admin-icon-btn admin-icon-danger" onclick="deleteItem(${ci},${ii})" title="Excluir item">🗑️</button>
-          </div>
-        </div>
-      `;
-    }).join('');
-
-    html += `
-      <div class="admin-cat-card">
-        <div class="admin-cat-header">
-          <div class="admin-cat-name">${cat.section}</div>
-          <div class="admin-cat-actions">
-            <button class="admin-icon-btn" onclick="moveCategory(${ci},-1)" title="Mover categoria para cima">▲</button>
-            <button class="admin-icon-btn" onclick="moveCategory(${ci},1)" title="Mover categoria para baixo">▼</button>
-            <button class="admin-icon-btn" onclick="openCategoryForm(${ci})" title="Editar categoria">✏️</button>
-            <button class="admin-icon-btn admin-icon-danger" onclick="deleteCategory(${ci})" title="Excluir categoria">🗑️</button>
-          </div>
-        </div>
-        <div class="admin-items-list">
-          ${itemsHtml || '<div style="font-size:12px;color:var(--muted);padding:6px 2px">Nenhum item nesta categoria</div>'}
-        </div>
-        <button class="btn-secondary" style="margin-top:10px" onclick="openItemForm(${ci})">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="margin-right:4px"><path d="M12 5v14M5 12h14"/></svg>
-          Novo Item
-        </button>
-      </div>
-    `;
-  });
-
-  if (MENU.length === 0) {
-    html += '<div style="text-align:center;padding:40px;color:var(--muted)">Nenhuma categoria cadastrada</div>';
-  }
-
-  el.innerHTML = html;
-}
-
-// ── Categorias ──
-function openCategoryForm(catIdx) {
-  const cat = (catIdx !== undefined) ? MENU[catIdx] : null;
-  const bodyHtml = `
-    <label class="form-label">Nome da categoria</label>
-    <input class="text-input" id="afCatName" value="${cat ? cat.section.replace(/"/g, '&quot;') : ''}" placeholder="Ex: 🍰 Sobremesas">
-  `;
-  openFormModal(cat ? 'Editar Categoria' : 'Nova Categoria', bodyHtml, () => saveCategoryForm(catIdx));
-}
-function saveCategoryForm(catIdx) {
-  const name = document.getElementById('afCatName').value.trim();
-  if (!name) { showToast('Informe o nome da categoria!'); return; }
-  if (catIdx !== undefined) {
-    MENU[catIdx].section = name;
-  } else {
-    MENU.push({ section: name, items: [] });
-  }
-  saveMenu();
-  closeFormModal();
-  renderAdmin();
-  showToast('✅ Categoria salva!');
-}
-function deleteCategory(catIdx) {
-  openModal('Excluir categoria?', 'Todos os itens desta categoria serão removidos permanentemente.', () => {
-    MENU.splice(catIdx, 1);
-    saveMenu();
-    renderAdmin();
-    showToast('Categoria excluída!');
-  });
-}
-function moveCategory(catIdx, dir) {
-  const newIdx = catIdx + dir;
-  if (newIdx < 0 || newIdx >= MENU.length) return;
-  [MENU[catIdx], MENU[newIdx]] = [MENU[newIdx], MENU[catIdx]];
-  saveMenu();
-  renderAdmin();
-}
-
-// ── Itens ──
-let afSizesTemp = [];
-function renderSizeRows() {
-  const c = document.getElementById('afSizesContainer');
-  if (!c) return;
-  c.innerHTML = afSizesTemp.map((s, i) => `
-    <div class="admin-size-row">
-      <input class="text-input" style="flex:1" placeholder="Tamanho (ex: P)" value="${(s.l || '').replace(/"/g, '&quot;')}" oninput="afSizesTemp[${i}].l=this.value">
-      <input class="text-input" style="width:100px" type="number" inputmode="decimal" step="0.01" placeholder="Preço" value="${s.p}" oninput="afSizesTemp[${i}].p=parseFloat(this.value)||0">
-      <button type="button" class="admin-icon-btn admin-icon-danger" onclick="removeSizeRow(${i})">×</button>
-    </div>
-  `).join('') + `<button type="button" class="btn-secondary" style="margin-top:2px" onclick="addSizeRow()">+ Adicionar tamanho</button>`;
-}
-function addSizeRow() { afSizesTemp.push({ l: '', p: 0 }); renderSizeRows(); }
-function removeSizeRow(i) { afSizesTemp.splice(i, 1); renderSizeRows(); }
-
-function toggleItemFormType() {
-  const type = document.getElementById('afType').value;
-  document.getElementById('afPriceWrap').style.display = type === 'unico' ? 'block' : 'none';
-  document.getElementById('afSizesWrap').style.display = type === 'tamanhos' ? 'block' : 'none';
-}
-
-function openItemForm(catIdx, itemIdx) {
-  const item = (itemIdx !== undefined) ? MENU[catIdx].items[itemIdx] : null;
-  const isSizes = item ? !!item.sizes : false;
-  afSizesTemp = item && item.sizes ? JSON.parse(JSON.stringify(item.sizes)) : [{ l: '', p: 0 }];
-
-  const bodyHtml = `
-    <label class="form-label">Nome</label>
-    <input class="text-input" id="afName" value="${item ? item.name.replace(/"/g, '&quot;') : ''}" style="margin-bottom:12px">
-    <label class="form-label">Descrição</label>
-    <input class="text-input" id="afDesc" value="${item && item.desc ? item.desc.replace(/"/g, '&quot;') : ''}" style="margin-bottom:12px">
-    <label class="form-label">Tipo de preço</label>
-    <select class="text-input" id="afType" onchange="toggleItemFormType()" style="margin-bottom:12px">
-      <option value="unico" ${!isSizes ? 'selected' : ''}>Preço único</option>
-      <option value="tamanhos" ${isSizes ? 'selected' : ''}>Vários tamanhos (P/M/G...)</option>
-    </select>
-    <div id="afPriceWrap" style="display:${!isSizes ? 'block' : 'none'}">
-      <label class="form-label">Preço (R$)</label>
-      <input class="text-input" id="afPrice" type="number" inputmode="decimal" step="0.01" value="${item && item.price !== undefined ? item.price : ''}" style="margin-bottom:12px">
-    </div>
-    <div id="afSizesWrap" style="display:${isSizes ? 'block' : 'none'}">
-      <label class="form-label">Tamanhos e preços</label>
-      <div id="afSizesContainer"></div>
-    </div>
-  `;
-  openFormModal(item ? 'Editar Item' : 'Novo Item', bodyHtml, () => saveItemForm(catIdx, itemIdx));
-  renderSizeRows();
-}
-
-function saveItemForm(catIdx, itemIdx) {
-  const name = document.getElementById('afName').value.trim();
-  const desc = document.getElementById('afDesc').value.trim();
-  const type = document.getElementById('afType').value;
-  if (!name) { showToast('Informe o nome do item!'); return; }
-
-  let newItem;
-  if (type === 'unico') {
-    const price = parseFloat(document.getElementById('afPrice').value) || 0;
-    newItem = { id: (itemIdx !== undefined) ? MENU[catIdx].items[itemIdx].id : genId('it'), name, desc, price };
-  } else {
-    const sizes = afSizesTemp
-      .filter(s => s.l && s.l.trim() !== '')
-      .map(s => ({ l: s.l.trim(), p: parseFloat(s.p) || 0 }));
-    if (sizes.length === 0) { showToast('Adicione ao menos um tamanho!'); return; }
-    newItem = { id: (itemIdx !== undefined) ? MENU[catIdx].items[itemIdx].id : genId('it'), name, desc, sizes };
-  }
-  if (itemIdx !== undefined && MENU[catIdx].items[itemIdx].active === false) newItem.active = false;
-
-  if (itemIdx !== undefined) MENU[catIdx].items[itemIdx] = newItem;
-  else MENU[catIdx].items.push(newItem);
-
-  saveMenu();
-  closeFormModal();
-  renderAdmin();
-  showToast('✅ Item salvo!');
-}
-
-function deleteItem(catIdx, itemIdx) {
-  openModal('Excluir item?', 'Este item será removido do cardápio permanentemente.', () => {
-    MENU[catIdx].items.splice(itemIdx, 1);
-    saveMenu();
-    renderAdmin();
-    showToast('Item excluído!');
-  });
-}
-
-function moveItem(catIdx, itemIdx, dir) {
-  const items = MENU[catIdx].items;
-  const newIdx = itemIdx + dir;
-  if (newIdx < 0 || newIdx >= items.length) return;
-  [items[itemIdx], items[newIdx]] = [items[newIdx], items[itemIdx]];
-  saveMenu();
-  renderAdmin();
-}
-
-function toggleItemActive(catIdx, itemIdx) {
-  const item = MENU[catIdx].items[itemIdx];
-  item.active = (item.active === false) ? true : false;
-  saveMenu();
-  renderAdmin();
-}
-
 document.getElementById('searchInput').addEventListener('input', function() {
   renderMenu(this.value);
 });
 
-(async function initApp() {
-  await loadMenu();
-  renderMenu();
-  updateBadge();
-})();
+renderMenu();
+updateBadge();
 </script>
 
 <script>
